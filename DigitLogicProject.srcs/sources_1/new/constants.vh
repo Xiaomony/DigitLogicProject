@@ -16,7 +16,8 @@
 `define KEY_9 4'b1011
 `define KEY_UP 4'b1100
 `define KEY_DOWN 4'b1101
-`define KEY_NONE 4'b1110
+`define KEY_ENTER 4'b1110
+`define KEY_NONE 4'b1111
 
 `endif
 
@@ -72,4 +73,31 @@
 `define INPUT_9 4'd9
 `define INPUT_BACKSPACE 4'd10   // 删除最后一位
 `define INPUT_CLEAN 4'd11       // 清除输入
+`endif
+
+// 扫描码, 只应当被keyboard_input.v使用
+`ifndef SCAN_CODES
+`define SCAN_CODES
+
+`define SC_RELEASE     8'hF0
+`define SC_EXTEND      8'hE0
+
+`define SC_ESC         8'h76
+`define SC_BACKSPACE   8'h66
+`define SC_ENTER       8'h5A
+
+`define SC_0           8'h45
+`define SC_1           8'h16
+`define SC_2           8'h1E
+`define SC_3           8'h26
+`define SC_4           8'h25
+`define SC_5           8'h2E
+`define SC_6           8'h36
+`define SC_7           8'h3D
+`define SC_8           8'h3E
+`define SC_9           8'h46
+
+`define SC_UP          8'h75
+`define SC_DOWN        8'h72
+
 `endif
