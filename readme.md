@@ -153,7 +153,8 @@
 主体思路参见[用户操作行为](#用户操作行为)
 
 ```verilog
-module drink_machine(input clk, ...)
+module drink_machine(input clk, ...);
+endmodule
 ```
 
 ### 饮料列表模块
@@ -174,8 +175,8 @@ module drink_machine(input clk, ...)
 module drink_list(input clk, input manager, input [2:0] operation, input [6:0]op_detail,
                   output [12:0]profit, output warning,
                   output [7:0]digit0, output [7:0]digit1, output [7:0]digit2, output [7:0]digit3,
-                  output [7:0]digit4, output [7:0]digit5, output [7:0]digit6, output [7:0]digit7) begin
-end
+                  output [7:0]digit4, output [7:0]digit5, output [7:0]digit6, output [7:0]digit7);
+endmodule
 ```
 
 ### 输入模式
@@ -186,8 +187,8 @@ end
 ```verilog
 module input_mode(input clk, input [3:0] operation,
                   output [7:0]digit0, output [7:0]digit1, output [7:0]digit2, output [7:0]digit3,
-                  output [7:0]digit4, output [7:0]digit5, output [7:0]digit6, output [7:0]digit7) begin
-end
+                  output [7:0]digit4, output [7:0]digit5, output [7:0]digit6, output [7:0]digit7);
+endmodule
 ```
 
 ## 输入输出与硬件交互
@@ -197,8 +198,8 @@ end
 其中，`clk`为系统时钟，`ps2_clk`和`ps2_data`分别绑定FPGA的K5、L4引脚，当读取到有效的按键的时候，`signal`将在接下来的一个时钟周期被变为1，且`keycode`变为读取到的按键的自定义键码（见下方）
 
 ```verilog
-module keyboard_input(input clk, input ps2_clk, input ps2_data, output signal, output [3:0]keycode) begin
-end
+module keyboard_input(input clk, input ps2_clk, input ps2_data, output signal, output [3:0]keycode);
+endmodule
 ```
 
 ### 数码管显示
@@ -210,8 +211,8 @@ end
 module digital_display(input clk,
                        input [7:0]digit0, input [7:0]digit1, input [7:0]digit2, input [7:0]digit3,
                        input [7:0]digit4, input [7:0]digit5, input [7:0]digit6, input [7:0]digit7,
-                       output [7:0]seg0, output [7:0]seg1, output [7:0]fragment) begin
-end
+                       output [7:0]seg0, output [7:0]seg1, output [7:0]fragment);
+endmodule
 ```
 
 ### LED状态
@@ -219,8 +220,8 @@ end
 其中`clk`为系统时钟，`led_out`对应从左到右8个大LED的引脚，`state`为LED状态(见[全局常量](#全局常量))：
 
 ```verilog
-module led_display(input clk, input [1:0]state, output [7:0]led_out) begin
-end
+module led_display(input clk, input [1:0]state, output [7:0]led_out);
+endmodule
 ```
 
 # 分工
