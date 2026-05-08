@@ -12,8 +12,7 @@ keyboard_input keyboard(
                     .signal(signal), .keycode(keycode));
 
 //reg [10:0] data;
-task send_bits;
-input [10:0]data;
+task send_bits(input [10:0]data);
 integer i,j;
 begin
     for (i=0;i<=10;i=i+1) begin
