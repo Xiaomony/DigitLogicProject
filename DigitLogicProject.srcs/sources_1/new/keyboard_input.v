@@ -15,6 +15,10 @@ reg parity_xor = 1'b0;
 reg extended = 1'b0;
 reg releasing = 1'b0;
 
+initial begin
+    keycode<=`KEY_NONE;
+end
+
 // 当ps2_clk下降沿来临的时候读取ps2_data
 always @(posedge clk) begin
     if (prev_ps2_clk & ~ps2_clk) begin
@@ -22,6 +26,7 @@ always @(posedge clk) begin
         if (~ps2_data && i == 1'b0) begin
             // start scanning
             i <= 1'b1;
+            parity_xor <= 1'b0;
         end else if (i>= 1'b1 && i<= 4'b1000) begin
             scancode[i-1] <= ps2_data;
             parity_xor <= parity_xor ^ ps2_data;
@@ -33,9 +38,16 @@ always @(posedge clk) begin
             if (releasing) 
                 keycode <= `KEY_NONE;
             else
+                signal <= 1'b1;
                 case (scancode)
-                    `SC_EXTEND: extended <= 1'b1;
-                    `SC_RELEASE: releasing <= 1'b1;
+                    `SC_EXTEND: begin
+                        extended <= 1'b1;
+                        signal <= 1'b0;
+                     end
+                    `SC_RELEASE: begin
+                        releasing <= 1'b1;
+                        signal <= 1'b0;
+                     end
                     `SC_ESC: keycode <= `KEY_ESC;
                     `SC_BACKSPACE: keycode <= `KEY_BACKSPACE;
                     `SC_ENTER: keycode <= `KEY_ENTER;
@@ -53,13 +65,13 @@ always @(posedge clk) begin
                             else keycode <= `KEY_NONE;
                     `SC_DOWN: if (extended) keycode <= `KEY_DOWN;
                             else keycode <= `KEY_NONE;
-                    default:
+                    default: begin
                         keycode <= `KEY_NONE;
+                        signal <= 1'b0;
+                    end
                 endcase
             
             // stop scanning
-            if (keycode != `KEY_NONE)
-                signal <= 1'b1;
             i <= 1'b0;
             scancode <= 1'b0;
             
@@ -76,7 +88,7 @@ always @(posedge clk) begin
             scancode <= 1'b0;
             parity_xor <= 1'b0;
         end
-        keycode <= `KEY_NONE;
+        // keycode <= `KEY_NONE;
     end
     prev_ps2_clk <= ps2_clk;
 end

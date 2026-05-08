@@ -63,3 +63,5 @@ xvlog.*
 
 ## checkpoint files
 *.dcp
+
+*.ip_user_files/
