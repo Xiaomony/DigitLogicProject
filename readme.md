@@ -63,7 +63,7 @@
 ## 全局常量
 
 以下为全局常量，在其他文件中直接引用该文件(`` `include "constants.vh"``)
-判断相等：``if keycode == `KEY_ESC begin ... end ``, 注意KEY_ESC前面有一个反引号
+判断相等：``if (keycode == `KEY_ESC) begin ... end ``, 注意KEY_ESC前面有一个反引号
 其中`KEYCODES`最后一个`KEY_NONE`为方便输入状态下无按键按下时定义的键码，`keyboard_input`的signal为0时也应该将keycode设置为`KEY_NONE`
 
 ```verilog
@@ -150,6 +150,7 @@
 ### 顶层模块
 
 整个项目的顶层模块，输入参数视子模块所需要用的引脚决定，负责调度键盘的输入，判断模式和状态，决定LED和数码管的输出
+
 主体思路参见[用户操作行为](#用户操作行为)
 
 ```verilog
@@ -169,6 +170,7 @@ endmodule
 5. 其余状态下忽略
 
 `profit`为总销售额(12bit, 最小为0，最大为8191),`warning`为是否报错(报错时将其设置为1，且只持续一个时钟周期)
+
 `digit0`~`digit7`为当前8个数码管需要显示的段信号(见[全局常量](#全局常量))
 
 ```verilog
@@ -182,7 +184,8 @@ endmodule
 ### 输入模式
 
 其中`clk`为系统时钟，`operation`为需要进行的操作(见[全局常量](#全局常量))
-`digit0`~`digit7`为输入模式时8个数码管需要显示的段信号(见[全局常量](#全局常量))
+
+`digit0`~`digit7`为输入模式时***从右到左***8个数码管需要显示的段信号(见[全局常量](#全局常量))
 
 ```verilog
 module input_mode(input clk, input [3:0] operation,
@@ -204,7 +207,8 @@ endmodule
 
 ### 数码管显示
 
-其中`clk`为系统时钟，`digit0`~`digit7`为8个数码管要显示的数字的段信号
+其中`clk`为系统时钟，`digit0`~`digit7`为***从右到左***8个数码管要显示的数字的段信号
+
 而`seg0`对应FPGA的左侧4个数码管的段信号，`seg1`对应FPGA的右侧4个数码管的段信号，`fragment`对应片选信号
 
 ```verilog
