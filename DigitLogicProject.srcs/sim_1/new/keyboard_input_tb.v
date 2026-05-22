@@ -49,6 +49,10 @@ initial begin
     send_bits({2'b11, `SC_RELEASE, 1'b0});
     send_bits({2'b10, `SC_UP, 1'b0});
     #20;
+    
+    send_bits({2'b10, `SC_EXTEND, 1'b0});
+    send_bits({2'b10, `SC_UP, 1'b0});
+    #20;
     $finish;
 end
 

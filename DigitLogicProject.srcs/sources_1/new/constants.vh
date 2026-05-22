@@ -82,7 +82,7 @@
 `define SC_RELEASE     8'hF0
 `define SC_EXTEND      8'hE0
 
-`define SC_ESC         8'h76
+`define SC_ESC         8'h08
 `define SC_BACKSPACE   8'h66
 `define SC_ENTER       8'h5A
 
@@ -97,7 +97,9 @@
 `define SC_8           8'h3E
 `define SC_9           8'h46
 
-`define SC_UP          8'h75
-`define SC_DOWN        8'h72
+`define SC_UP          8'h63
+`define SC_DOWN        8'h60
+`define SC_J           8'h3B
+`define SC_K           8'h42
 
 `endif
