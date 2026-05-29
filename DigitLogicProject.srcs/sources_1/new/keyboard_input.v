@@ -66,16 +66,16 @@ always @(posedge clk) begin
                         `SC_ESC: keycode <= `KEY_ESC;
                         `SC_BACKSPACE: keycode <= `KEY_BACKSPACE;
                         `SC_ENTER: keycode <= `KEY_ENTER;
-                        `SC_0: keycode <= `KEY_0;
-                        `SC_1: keycode <= `KEY_1;
-                        `SC_2: keycode <= `KEY_2;
-                        `SC_3: keycode <= `KEY_3;
-                        `SC_4: keycode <= `KEY_4;
-                        `SC_5: keycode <= `KEY_5;
-                        `SC_6: keycode <= `KEY_6;
-                        `SC_7: keycode <= `KEY_7;
-                        `SC_8: keycode <= `KEY_8;
-                        `SC_9: keycode <= `KEY_9;
+                        `SC_0, `SC_KP0: keycode <= `KEY_0;
+                        `SC_1, `SC_KP1: keycode <= `KEY_1;
+                        `SC_2, `SC_KP2: keycode <= `KEY_2;
+                        `SC_3, `SC_KP3: keycode <= `KEY_3;
+                        `SC_4, `SC_KP4: keycode <= `KEY_4;
+                        `SC_5, `SC_KP5: keycode <= `KEY_5;
+                        `SC_6, `SC_KP6: keycode <= `KEY_6;
+                        `SC_7, `SC_KP7: keycode <= `KEY_7;
+                        `SC_8, `SC_KP8: keycode <= `KEY_8;
+                        `SC_9, `SC_KP9: keycode <= `KEY_9;
                         
                         `SC_J: keycode <= `KEY_DOWN;
                         `SC_K: keycode <= `KEY_UP;

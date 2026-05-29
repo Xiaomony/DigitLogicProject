@@ -135,6 +135,17 @@
 `define SC_7           8'h3D
 `define SC_8           8'h3E
 `define SC_9           8'h46
+`define SC_KP0         8'h70
+`define SC_KP1         8'h69
+`define SC_KP2         8'h72
+`define SC_KP3         8'h7A
+`define SC_KP4         8'h6B
+`define SC_KP5         8'h73
+`define SC_KP6         8'h74
+`define SC_KP7         8'h6C
+`define SC_KP8         8'h75
+`define SC_KP9         8'h7D
+
 
 `define SC_UP          8'h63
 `define SC_DOWN        8'h60
