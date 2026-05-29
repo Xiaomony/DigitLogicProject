@@ -11,7 +11,7 @@ module keyboard_input(
         // output reg [7:0]debug
         );
 
-reg [3:0] i = 3'b0;
+reg [3:0] i = 4'b0;
 reg [7:0] scancode= 1'b0;
 reg parity_xor = 1'b0;
 reg extended = 1'b0;

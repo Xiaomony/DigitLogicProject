@@ -16,7 +16,7 @@ always @(posedge clk) begin
         `LED_RIGHT: led_out <= 8'b1;
         `LED_WARNING: begin
             if (devided_freq_2Hz) begin
-                blink_state = ~blink_state;
+                blink_state <= ~blink_state;
                 if (blink_state)
                     led_out <= 8'b11111111;
                 else

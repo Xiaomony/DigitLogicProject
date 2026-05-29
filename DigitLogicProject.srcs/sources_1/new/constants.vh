@@ -49,12 +49,51 @@
 `ifndef DIGIT_SEG
 `define DIGIT_SEG
 
-`define DIGIT_0
-`define DIGIT_1
-`define DIGIT_2
-`define DIGIT_3
-// ...具体的值待填入，应为8bit(7段光管加上小数点)
-// 请将所有数码管可能显示的字符的段选信号写在这里
+`define DIGIT_0 8'b11111100  
+`define DIGIT_1 8'b01100000  
+`define DIGIT_2 8'b11011010  
+`define DIGIT_3 8'b11110010  
+`define DIGIT_4 8'b01100110  
+`define DIGIT_5 8'b10110110  
+`define DIGIT_6 8'b10111110  
+`define DIGIT_7 8'b11100000  
+`define DIGIT_8 8'b11111110  
+`define DIGIT_9 8'b11110110  
+
+`define DIGIT_A 8'b11101110  
+`define DIGIT_b 8'b00111110  
+`define DIGIT_C 8'b10011100  
+`define DIGIT_c 8'b00011010  
+`define DIGIT_d 8'b01111010  
+`define DIGIT_E 8'b10011110  
+`define DIGIT_F 8'b10001110  
+`define DIGIT_g 8'b11110110  
+`define DIGIT_G 8'b10111100 
+`define DIGIT_H 8'b01101110  
+`define DIGIT_h 8'b00101110  
+`define DIGIT_i 8'b00001000  
+`define DIGIT_I 8'b00001100  
+`define DIGIT_j 8'b01110000  
+`define DIGIT_L 8'b00011100  
+`define DIGIT_l 8'b00001100  
+`define DIGIT_n 8'b00101010  
+`define DIGIT_N 8'b11101100  
+`define DIGIT_O 8'b11111100  
+`define DIGIT_o 8'b00111010  
+`define DIGIT_p 8'b11001110  
+`define DIGIT_q 8'b11100110  
+`define DIGIT_r 8'b00001010  
+`define DIGIT_S 8'b10110110  
+`define DIGIT_t 8'b00011110  
+`define DIGIT_U 8'b01111100  
+`define DIGIT_u 8'b00111000  
+`define DIGIT_y 8'b01110110  
+
+`define DIGIT_UNDERLINE 8'b00010000  
+`define DIGIT_DASH      8'b00000010  
+`define DIGIT_DP_ON     8'b00000001  
+`define DIGIT_OFF       8'b00000000  
+
 `endif
 
 // 输入模式下的操作
