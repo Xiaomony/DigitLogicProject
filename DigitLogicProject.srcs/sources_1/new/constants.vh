@@ -124,6 +124,7 @@
 `define SC_ESC         8'h08
 `define SC_BACKSPACE   8'h66
 `define SC_ENTER       8'h5A
+`define SC_KP_ENTER    8'h79
 
 `define SC_0           8'h45
 `define SC_1           8'h16

@@ -65,7 +65,7 @@ always @(posedge clk) begin
                          end
                         `SC_ESC: keycode <= `KEY_ESC;
                         `SC_BACKSPACE: keycode <= `KEY_BACKSPACE;
-                        `SC_ENTER: keycode <= `KEY_ENTER;
+                        `SC_ENTER, `SC_KP_ENTER: keycode <= `KEY_ENTER;
                         `SC_0, `SC_KP0: keycode <= `KEY_0;
                         `SC_1, `SC_KP1: keycode <= `KEY_1;
                         `SC_2, `SC_KP2: keycode <= `KEY_2;
