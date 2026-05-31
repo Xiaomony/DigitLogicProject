@@ -81,6 +81,7 @@
 `define DIGIT_O 8'b11111100  
 `define DIGIT_o 8'b00111010  
 `define DIGIT_p 8'b11001110  
+`define DIGIT_P 8'b11001110  
 `define DIGIT_q 8'b11100110  
 `define DIGIT_r 8'b00001010  
 `define DIGIT_S 8'b10110110  

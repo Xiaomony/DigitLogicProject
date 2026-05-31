@@ -29,6 +29,12 @@ module top(
     parameter STATE_PROFIT = 5;
     parameter STATE_ERROR = 6;
 
+    parameter ERR_PICK = 0;
+    parameter ERR_PAY = 1;
+    parameter ERR_OUT_OF_STOCK = 2;
+    parameter ERR_OFF_SALE = 3;
+
+    reg [1:0] error_code = 0;
     reg [2:0] state;
     reg [2:0] return_state;
     reg [2:0] pending_operation;
@@ -47,7 +53,7 @@ module top(
     reg [12:0] profit;
     wire warning;
 
-    wire buy_success;
+
     wire [6:0] current_price;
     wire [3:0] current_drink;
     wire buy_access;
@@ -105,7 +111,8 @@ module top(
         .signal(key_signal),
         .keycode(keycode)
     );
-
+    wire inventory;
+    wire on_sale;
     drink_list dl(
         .clk(clk),
         .manager(manager_mode),
@@ -115,7 +122,10 @@ module top(
         .confirm_drink(confirm_drink),
         .warning(warning),
         .buy_success(buy_success),
-        .buy_access(buy_access),
+
+        .crr_have_inventory(inventory),
+        .on_sale(on_sale),
+
         .current_price(current_price),
         .current_drink(current_drink),
         .digit0(list_digit0),
@@ -217,6 +227,7 @@ module top(
                 begin
                     // TODO: Error
                     wait_counter <= 0;
+                    error_code <= ERR_PICK;
                     state <= STATE_ERROR;
                 end
         end
@@ -283,13 +294,16 @@ module top(
 
                         `KEY_ENTER:
                         begin
-                            if (buy_access) begin
+                            if (inventory && on_sale) begin
                                 return_state <= STATE_SALE;
                                 pending_operation <= `OP_CONFIRM;
                                 input_operation <= `INPUT_CLEAN;
                                 state <= STATE_INPUT;
                             end else begin
                                 wait_counter <= 0;
+                                if (!on_sale)
+                                    error_code <= ERR_OFF_SALE;
+                                else error_code <= ERR_OUT_OF_STOCK;
                                 state <= STATE_ERROR;
                             end
                         end
@@ -363,7 +377,7 @@ module top(
 
                             if(pending_operation == `OP_CONFIRM) begin
                                 // 支付成功
-                                if (input_value[6:0] >= current_price && !warning && buy_access) begin
+                                if (input_value[6:0] >= current_price && !warning) begin
                                     pending_drink <= current_drink;
 
                                     countdown <= 5;
@@ -373,6 +387,7 @@ module top(
                                 end else begin
                                     // 余额不足，返回销售界面
                                     wait_counter <= 0;
+                                    error_code <= ERR_PAY;
                                     state <= STATE_ERROR;
                                 end
 
@@ -496,12 +511,43 @@ module top(
                 digit7 = `DIGIT_E;
                 digit6 = `DIGIT_r;
                 digit5 = `DIGIT_r;
-                digit4 = `DIGIT_o;
+                digit4 = `DIGIT_OFF;
 
-                digit3 = `DIGIT_r;
-                digit2 = `DIGIT_OFF;
-                digit1 = `DIGIT_OFF;
-                digit0 = `DIGIT_OFF;
+                case (error_code)
+                    ERR_PICK: begin
+                        digit3 = `DIGIT_P;
+                        digit2 = `DIGIT_I;
+                        digit1 = `DIGIT_C;
+                        digit0 = `DIGIT_OFF;
+                    end
+                    ERR_PAY: begin
+                        digit3 = `DIGIT_P;
+                        digit2 = `DIGIT_A;
+                        digit1 = `DIGIT_y;
+                        digit0 = `DIGIT_OFF;
+                    end
+                    ERR_OUT_OF_STOCK:
+                    begin
+                        digit3 = `DIGIT_S;
+                        digit2 = `DIGIT_t;
+                        digit1 = `DIGIT_o;
+                        digit0 = `DIGIT_C;
+                    end
+                    ERR_OFF_SALE:
+                    begin
+                        digit3 = `DIGIT_O;
+                        digit2 = `DIGIT_F;
+                        digit1 = `DIGIT_S;
+                        digit0 = `DIGIT_A;
+                    end
+                    default: 
+                    begin
+                        digit3 = `DIGIT_OFF;
+                        digit2 = `DIGIT_OFF;
+                        digit1 = `DIGIT_OFF;
+                        digit0 = `DIGIT_OFF;
+                    end
+                endcase
             end
 
             default:
