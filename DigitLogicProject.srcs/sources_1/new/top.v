@@ -508,10 +508,17 @@ module top(
 
             STATE_ERROR:
             begin
-                digit7 = `DIGIT_E;
-                digit6 = `DIGIT_r;
-                digit5 = `DIGIT_r;
-                digit4 = `DIGIT_OFF;
+                if (error_code == ERR_PICK) begin
+                    digit7 = `DIGIT_n;
+                    digit6 = `DIGIT_o;
+                    digit5 = `DIGIT_OFF;
+                    digit4 = `DIGIT_OFF;
+                end else begin
+                    digit7 = `DIGIT_E;
+                    digit6 = `DIGIT_r;
+                    digit5 = `DIGIT_r;
+                    digit4 = `DIGIT_OFF;
+                end
 
                 case (error_code)
                     ERR_PICK: begin

@@ -100,6 +100,7 @@ linkcolor=cyan
 \begin{tikzpicture}[
 	node distance=2cm,
 	process/.style={
+		align=center,
 		rectangle,
 		draw,
 		rounded corners,
@@ -124,7 +125,7 @@ linkcolor=cyan
 	
 	% menu items
 	\node (sale) [process, below left=0.5cm and 3cm of menu] {销售模式};
-	\node (err) [process, below=1.5cm of menu] {报错状态(LED闪烁)};
+	\node (err) [process, below=1.5cm of menu] {报错状态\\LED闪烁,数码管显示错误码};
 	\node (drink_list) [process, below=1.5cm of err] {饮料列表};
 	\draw[->] (menu) -- node[midway, above]{数字键1} (sale);
 	\draw[->] (sale) -- node[left]{无管理权限} (drink_list);
@@ -231,6 +232,15 @@ linkcolor=cyan
 	\draw[->] (list) -- node[midway,right]{数字键} (jump);
 \end{tikzpicture}
 
+\subsection{错误码}
+\begin{enumerate}
+	\item \texttt{NO PIC}：5秒内未取货
+	\item \texttt{Err PAY}：余额不足
+	\item \texttt{Err Stoc}：Stock，选择的饮料缺货
+	\item \texttt{Err OFSA}：OFF SALE，选择的饮料已停售
+	
+\end{enumerate}
+
 \subsection{系统架构及模块接口}
 模块：
 \begin{enumerate}
@@ -312,10 +322,6 @@ module devide_frequency #(parameter PERIOD=250_000)(input clk, output tick);
 \label{sec:instruction}
 \subsection{测试1}
 	进入菜单后，按下1进入销售模式，使用上下按键翻动列表，或者使用数字键跳转到相应编号的饮料
-	
-	选择好饮料后，按下Enter键，输入足够的余额，再次按下Enter键，LED会进入流水灯状态，等待取货，此时按下Enter键取货成功，可以看到饮料列表中显示的剩余库存减少了一个
-\subsection{测试2}
-	进入菜单后，按下1进入销售模式，使用上下按键翻动列表，或者使用数字键跳转到相应编号的饮料
 
 	选择好饮料后，按下Enter键，输入不足的余额，再次按下Enter键，由于余额不足会进入报错状态，LED闪烁
 	
@@ -323,13 +329,19 @@ module devide_frequency #(parameter PERIOD=250_000)(input clk, output tick);
 	
 	此时会要求输入密码，密码为12345678，输入后按下Enter进入管理模式，选择刚刚需要购买的饮料，按下3键修改其单价
 	
-	回到销售模式后，刚刚的饮料单价降低，可以成功购买
-\subsection{测试1}
-	进入菜单后，按下1进入销售模式，使用上下按键翻动列表，或者使用数字键跳转到相应编号的饮料
+	回到销售模式后，刚刚的饮料单价降低，选择好饮料后，按下Enter键，输入足够的余额，再次按下Enter键，LED会进入流水灯状态，等待取货，此时按下Enter键取货成功，可以看到饮料列表中显示的剩余库存减少了一个
+\subsection{测试2}
+	进入菜单后，按下2进入管理模式，使用上下按键翻动列表，选择一个饮料
 	
-	选择好饮料后，按下Enter键，输入足够的余额，再次按下Enter键，LED会进入流水灯状态，等待取货
+	选择好饮料后，按下2键，将其转化为停售，再选择另一个饮料，按下1键，修改其库存为0、
 	
-	此时等待5秒不取货，可以看到LED闪烁并退货，库存未发生变化
+	按Esc回到菜单，按下1键，选择停售的饮料，按下Enter购买，此时会报错，LED闪烁并且数码管显示错误码
+	
+	选择库存为0的饮料，按下Enter购买，此时会报错，LED闪烁并且数码管显示错误码
+	
+	选择一个有货的饮料，按下Enter并输入充足余额，LED会进入流水灯状态，等待取货
+	
+	此时等待5秒不取货，可以看到LED闪烁并退货，数码管显示\texttt{NO PIC}，库存未发生变化
 	
 \section{开源和AI使用以及思考总结}
 \label{sec:conclusion}
