@@ -6,23 +6,20 @@ module top(
     input clk,
     input ps2_clk,
     input ps2_data,
-
-    output reg manager_mode,
-
-    output reg [7:0] digit0,
-    output reg [7:0] digit1,
-    output reg [7:0] digit2,
-    output reg [7:0] digit3,
-    output reg [7:0] digit4,
-    output reg [7:0] digit5,
-    output reg [7:0] digit6,
-    output reg [7:0] digit7,
-
     output [7:0] seg0,
     output [7:0] seg1,
     output [7:0] fragment,
     output [7:0] led_out
 );
+    reg manager_mode;
+    reg [7:0] digit0;
+    reg [7:0] digit1;
+    reg [7:0] digit2;
+    reg [7:0] digit3;
+    reg [7:0] digit4;
+    reg [7:0] digit5;
+    reg [7:0] digit6;
+    reg [7:0] digit7;
 
     parameter STATE_MENU = 0;
     parameter STATE_SALE = 1;
@@ -378,9 +375,9 @@ module top(
             led_state <= `LED_LEFT;
         else case(state)
             STATE_MENU:    led_state <= `LED_CHASING;
-            STATE_SALE:    led_state <= `LED_RIGHT;
-            STATE_MANAGER: led_state <= `LED_LEFT;
-            STATE_INPUT:   led_state <= `LED_RIGHT;
+            STATE_SALE:    led_state <= `LED_LEFT;
+            STATE_MANAGER: led_state <= `LED_RIGHT;
+            // STATE_INPUT:   led_state <= `LED_RIGHT;
             WAIT_PICKUP:  led_state <= `LED_CHASING;
         endcase
 

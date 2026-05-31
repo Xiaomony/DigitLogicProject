@@ -1,3 +1,8 @@
+## Latex Documents
+Documents/*
+!/Documents/*.tex
+!/Documents/res/
+
 ## log files
 *.log
 *.jou
