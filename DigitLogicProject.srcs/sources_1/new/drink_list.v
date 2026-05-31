@@ -12,7 +12,7 @@ module drink_list(
     output reg warning,
 
     output reg buy_success,
-    output reg [6:0] current_price,
+    output [6:0] current_price,
     output reg [3:0] current_drink,
 
     output reg [7:0] digit0,
@@ -38,6 +38,8 @@ module drink_list(
     reg [6:0] current;
 
     integer i;
+
+    assign current_price = price[current];
 
     function [7:0] to_seg;
         input [3:0] num;
@@ -92,7 +94,7 @@ module drink_list(
 
         warning = 0;
         buy_success = 0;
-        current_price = 0;
+        // current_price = 0;
 
     end
 
@@ -100,7 +102,7 @@ module drink_list(
 
         warning <= 0;
         buy_success <= 0;
-        current_drink = current;
+        current_drink <= current;
 
         if(confirm_sale)
             begin
@@ -152,7 +154,7 @@ module drink_list(
 
                 else begin
 
-                    current_price <= price[current];
+                    // current_price <= price[current];
 
                     buy_success <= 1;
 

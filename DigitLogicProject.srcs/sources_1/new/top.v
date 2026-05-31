@@ -39,7 +39,7 @@ module top(
     reg [31:0] wait_counter = 0;
     reg waiting_pickup = 0;
     reg [3:0] pending_drink = 0;
-    reg [15:0] pending_price = 0;
+    
     reg confirm_sale;
     reg [3:0] confirm_drink;
 
@@ -203,7 +203,7 @@ module top(
                 confirm_sale <= 1;
                 confirm_drink <= pending_drink;
 
-                profit <= profit + pending_price;
+                profit <= profit + current_price;
 
                 state <= STATE_SALE;
 
@@ -349,7 +349,6 @@ module top(
                             begin
 
                             pending_drink <= current_drink;
-                            pending_price <= current_price;
 
                             countdown <= 5;
                             wait_counter <= 0;
