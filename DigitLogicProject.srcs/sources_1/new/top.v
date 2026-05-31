@@ -27,6 +27,7 @@ module top(
     parameter STATE_INPUT = 3;
     parameter WAIT_PICKUP = 4;
     parameter STATE_PROFIT = 5;
+    parameter STATE_ERROR = 6;
 
     reg [2:0] state;
     reg [2:0] return_state;
@@ -49,6 +50,7 @@ module top(
     wire buy_success;
     wire [6:0] current_price;
     wire [3:0] current_drink;
+    wire buy_access;
 
     wire [31:0] input_value;
 
@@ -113,6 +115,7 @@ module top(
         .confirm_drink(confirm_drink),
         .warning(warning),
         .buy_success(buy_success),
+        .buy_access(buy_access),
         .current_price(current_price),
         .current_drink(current_drink),
         .digit0(list_digit0),
@@ -182,7 +185,7 @@ module top(
         if(state == WAIT_PICKUP)
         begin
                 // 1秒计时
-                if(wait_counter < 50_000_000 - 1)
+                if(wait_counter < 100_000_000 - 1)
                     begin
                     wait_counter <= wait_counter + 1;
                     end
@@ -212,11 +215,23 @@ module top(
                 // 超时未取货
                 else if(countdown == 0)
                 begin
-                state <= STATE_SALE;
-
+                    // TODO: Error
+                    wait_counter <= 0;
+                    state <= STATE_ERROR;
                 end
         end
 
+        else if (state == STATE_ERROR) begin
+                if(wait_counter < 200_000_000 - 1)
+                    begin
+                        wait_counter <= wait_counter + 1;
+                    end
+                else
+                    begin
+                        wait_counter <= 0;
+                        state <= STATE_SALE;
+                    end
+        end
 
         else if(key_signal) begin
 
@@ -268,10 +283,15 @@ module top(
 
                         `KEY_ENTER:
                         begin
-                            return_state <= STATE_SALE;
-                            pending_operation <= `OP_CONFIRM;
-                            input_operation <= `INPUT_CLEAN;
-                            state <= STATE_INPUT;
+                            if (buy_access) begin
+                                return_state <= STATE_SALE;
+                                pending_operation <= `OP_CONFIRM;
+                                input_operation <= `INPUT_CLEAN;
+                                state <= STATE_INPUT;
+                            end else begin
+                                wait_counter <= 0;
+                                state <= STATE_ERROR;
+                            end
                         end
 
                     endcase
@@ -341,30 +361,23 @@ module top(
                             list_detail <= input_value[6:0];
                             input_operation <= `INPUT_CLEAN;
 
-                            if(pending_operation == `OP_CONFIRM)
-                            begin
+                            if(pending_operation == `OP_CONFIRM) begin
+                                // 支付成功
+                                if (input_value[6:0] >= current_price && !warning && buy_access) begin
+                                    pending_drink <= current_drink;
 
-                            // 支付成功
-                            if(input_value[6:0] >= current_price)
-                            begin
+                                    countdown <= 5;
+                                    wait_counter <= 0;
 
-                            pending_drink <= current_drink;
+                                    state <= WAIT_PICKUP;
+                                end else begin
+                                    // 余额不足，返回销售界面
+                                    wait_counter <= 0;
+                                    state <= STATE_ERROR;
+                                end
 
-                            countdown <= 5;
-                            wait_counter <= 0;
-
-                            state <= WAIT_PICKUP;
-
-                            end
-                            else
-                            begin
-                            state <= STATE_SALE;
-                            end
-
-                            end
-                            else
-                            begin
-                            state <= return_state;
+                            end else begin
+                                state <= return_state;
                             end
 
                         end
@@ -406,6 +419,7 @@ module top(
             STATE_MANAGER: led_state <= `LED_RIGHT;
             // STATE_INPUT:   led_state <= `LED_RIGHT;
             WAIT_PICKUP:  led_state <= `LED_CHASING;
+            STATE_ERROR:   led_state <= `LED_WARNING;
         endcase
 
     end
@@ -464,6 +478,7 @@ module top(
                 digit6 = `DIGIT_OFF;
                 digit7 = `DIGIT_OFF;
             end
+
             STATE_PROFIT:
             begin
                 digit0 = profit % 10 == 0 ? `DIGIT_0 : to_seg(profit % 10);
@@ -474,6 +489,19 @@ module top(
                 digit6 = `DIGIT_r;
                 digit5 = `DIGIT_o;
                 digit4 = `DIGIT_F;
+            end
+
+            STATE_ERROR:
+            begin
+                digit7 = `DIGIT_E;
+                digit6 = `DIGIT_r;
+                digit5 = `DIGIT_r;
+                digit4 = `DIGIT_o;
+
+                digit3 = `DIGIT_r;
+                digit2 = `DIGIT_OFF;
+                digit1 = `DIGIT_OFF;
+                digit0 = `DIGIT_OFF;
             end
 
             default:

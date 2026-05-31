@@ -13,6 +13,7 @@ module drink_list(
 
     output reg buy_success,
     output [6:0] current_price,
+    output buy_access,
     output reg [3:0] current_drink,
 
     output reg [7:0] digit0,
@@ -40,6 +41,7 @@ module drink_list(
     integer i;
 
     assign current_price = price[current];
+    assign buy_access = sale_state[current] && inventory[current] > 0;
 
     function [7:0] to_seg;
         input [3:0] num;
