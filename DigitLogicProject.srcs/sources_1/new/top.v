@@ -28,6 +28,7 @@ module top(
     parameter STATE_SALE = 1;
     parameter STATE_MANAGER = 2;
     parameter STATE_INPUT = 3;
+    parameter WAIT_PICKUP = 4;
 
     reg [2:0] state;
     reg [2:0] return_state;
@@ -36,11 +37,20 @@ module top(
     reg [2:0] list_operation;
     reg [6:0] list_detail;
 
-    wire [12:0] profit;
+    reg [2:0] countdown = 0;
+    reg [31:0] wait_counter = 0;
+    reg waiting_pickup = 0;
+    reg [3:0] pending_drink = 0;
+    reg [15:0] pending_price = 0;
+    reg confirm_sale;
+    reg [3:0] confirm_drink;
+
+    reg [12:0] profit;
     wire warning;
 
     wire buy_success;
     wire [6:0] current_price;
+    wire [3:0] current_drink;
 
     wire [31:0] input_value;
 
@@ -82,10 +92,12 @@ module top(
         .manager(manager_mode),
         .operation(list_operation),
         .op_detail(list_detail),
-        .profit(profit),
+        .confirm_sale(confirm_sale),
+        .confirm_drink(confirm_drink),
         .warning(warning),
         .buy_success(buy_success),
         .current_price(current_price),
+        .current_drink(current_drink),
         .digit0(list_digit0),
         .digit1(list_digit1),
         .digit2(list_digit2),
@@ -132,7 +144,7 @@ module top(
     );
 
     initial begin
-
+        profit = 0;
         state = STATE_MENU;
         return_state = STATE_MENU;
         pending_operation = `OP_NONE;
@@ -148,8 +160,48 @@ module top(
 
         list_operation <= `OP_NONE;
         input_operation <= 4'b1111;
+         confirm_sale <= 0;
 
-        if(key_signal) begin
+        if(state == WAIT_PICKUP)
+        begin
+                // 1秒计时
+                if(wait_counter < 50_000_000 - 1)
+                    begin
+                    wait_counter <= wait_counter + 1;
+                    end
+                else
+                    begin
+                    wait_counter <= 0;
+
+                    if(countdown > 0)
+                    begin
+                        countdown <= countdown - 1;
+                    end
+                    end
+
+                // 用户确认取货
+                if(key_signal && keycode == `KEY_ENTER)
+                begin
+
+                confirm_sale <= 1;
+                confirm_drink <= pending_drink;
+
+                profit <= profit + pending_price;
+
+                state <= STATE_SALE;
+
+                end
+
+                // 超时未取货
+                else if(countdown == 0)
+                begin
+                state <= STATE_SALE;
+
+                end
+        end
+
+
+        else if(key_signal) begin
 
             case(state)
 
@@ -259,10 +311,38 @@ module top(
 
                         `KEY_ENTER:
                         begin
+
                             list_operation <= pending_operation;
                             list_detail <= input_value[6:0];
                             input_operation <= `INPUT_CLEAN;
+
+                            if(pending_operation == `OP_CONFIRM)
+                            begin
+
+                            // 支付成功
+                            if(input_value[6:0] >= current_price)
+                            begin
+
+                            pending_drink <= current_drink;
+                            pending_price <= current_price;
+
+                            countdown <= 5;
+                            wait_counter <= 0;
+
+                            state <= WAIT_PICKUP;
+
+                            end
+                            else
+                            begin
+                            state <= STATE_SALE;
+                            end
+
+                            end
+                            else
+                            begin
                             state <= return_state;
+                            end
+
                         end
 
                         `KEY_BACKSPACE:
@@ -301,6 +381,7 @@ module top(
             STATE_SALE:    led_state <= `LED_RIGHT;
             STATE_MANAGER: led_state <= `LED_LEFT;
             STATE_INPUT:   led_state <= `LED_RIGHT;
+            WAIT_PICKUP:  led_state <= `LED_CHASING;
         endcase
 
     end
@@ -336,6 +417,28 @@ module top(
                 digit6 = input_digit6;
                 digit7 = input_digit7;
 
+            end
+
+             WAIT_PICKUP:
+             begin
+                case(countdown)
+                    0: digit0 = `DIGIT_0;
+                    1: digit0 = `DIGIT_1;
+                    2: digit0 = `DIGIT_2;
+                    3: digit0 = `DIGIT_3;
+                    4: digit0 = `DIGIT_4;
+                    5: digit0 = `DIGIT_5;
+                default:
+                    digit0 = `DIGIT_OFF;
+                endcase
+
+                digit1 = `DIGIT_OFF;
+                digit2 = `DIGIT_OFF;
+                digit3 = `DIGIT_OFF;
+                digit4 = `DIGIT_OFF;
+                digit5 = `DIGIT_OFF;
+                digit6 = `DIGIT_OFF;
+                digit7 = `DIGIT_OFF;
             end
 
             default:

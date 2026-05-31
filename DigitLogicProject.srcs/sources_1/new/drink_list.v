@@ -7,12 +7,13 @@ module drink_list(
     input manager,
     input [2:0] operation,
     input [6:0] op_detail,
-
-    output reg [12:0] profit,
+    input confirm_sale,
+    input [3:0] confirm_drink,
     output reg warning,
 
     output reg buy_success,
     output reg [6:0] current_price,
+    output reg [3:0] current_drink,
 
     output reg [7:0] digit0,
     output reg [7:0] digit1,
@@ -89,7 +90,6 @@ module drink_list(
 
         current = 0;
 
-        profit = 0;
         warning = 0;
         buy_success = 0;
         current_price = 0;
@@ -100,6 +100,15 @@ module drink_list(
 
         warning <= 0;
         buy_success <= 0;
+        current_drink = current;
+
+        if(confirm_sale)
+            begin
+            if(inventory[confirm_drink] > 0)
+                begin
+                inventory[confirm_drink] <= inventory[confirm_drink] - 1;
+                end
+            end
 
         case(operation)
 
@@ -143,9 +152,8 @@ module drink_list(
 
                 else begin
 
-                    inventory[current] <= inventory[current] - 1;
-                    profit <= profit + price[current];
                     current_price <= price[current];
+
                     buy_success <= 1;
 
                 end
