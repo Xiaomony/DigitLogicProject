@@ -25,6 +25,7 @@ module top(
     parameter STATE_SALE = 1;
     parameter STATE_MANAGER = 2;
     parameter STATE_INPUT = 3;
+    parameter STATE_PROFIT = 4;
 
     reg [2:0] state;
     reg [2:0] return_state;
@@ -65,6 +66,25 @@ module top(
     wire [3:0] keycode;
 
     reg [1:0] led_state;
+
+    function [7:0] to_seg;
+        input [3:0] num;
+        begin
+            case(num)
+                // 0: to_seg = `DIGIT_0;
+                1: to_seg = `DIGIT_1;
+                2: to_seg = `DIGIT_2;
+                3: to_seg = `DIGIT_3;
+                4: to_seg = `DIGIT_4;
+                5: to_seg = `DIGIT_5;
+                6: to_seg = `DIGIT_6;
+                7: to_seg = `DIGIT_7;
+                8: to_seg = `DIGIT_8;
+                9: to_seg = `DIGIT_9;
+                default: to_seg = `DIGIT_OFF;
+            endcase
+        end
+    endfunction
 
     keyboard_input ki(
         .clk(clk),
@@ -159,7 +179,7 @@ module top(
                     end
 
                     else if(keycode == `KEY_2) begin
-                        state <= STATE_MANAGER;
+                        state <= STATE_PROFIT;
                         manager_mode <= 1;
                     end
 
@@ -212,7 +232,7 @@ module top(
                     case(keycode)
 
                         `KEY_ESC:
-                            state <= STATE_MENU;
+                            state <= STATE_PROFIT;
 
                         `KEY_UP:
                             list_operation <= `OP_UP;
@@ -241,6 +261,14 @@ module top(
 
                     endcase
 
+                end
+
+                STATE_PROFIT:
+                begin
+                    if(keycode == `KEY_ESC)
+                        state <= STATE_MENU;
+                    else if(keycode == `KEY_ENTER)
+                        state <= STATE_MANAGER;
                 end
 
                 STATE_INPUT:
@@ -333,6 +361,17 @@ module top(
                 digit6 = input_digit6;
                 digit7 = input_digit7;
 
+            end
+            STATE_PROFIT:
+            begin
+                digit0 = profit % 10 == 0 ? `DIGIT_0 : to_seg(profit % 10);
+                digit1 = to_seg((profit / 10) % 10);
+                digit2 = to_seg((profit / 100) % 10);
+                digit3 = to_seg((profit / 1000) % 10);
+                digit7 = `DIGIT_p;
+                digit6 = `DIGIT_r;
+                digit5 = `DIGIT_o;
+                digit4 = `DIGIT_F;
             end
 
             default:
