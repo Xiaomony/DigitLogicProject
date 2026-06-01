@@ -28,13 +28,15 @@ module top(
     parameter WAIT_PICKUP = 4;
     parameter STATE_PROFIT = 5;
     parameter STATE_ERROR = 6;
+    parameter STATE_VERIFY_PASSWD = 7;
 
     parameter ERR_PICK = 0;
     parameter ERR_PAY = 1;
     parameter ERR_OUT_OF_STOCK = 2;
     parameter ERR_OFF_SALE = 3;
+    parameter ERR_PASS = 4;
 
-    reg [1:0] error_code = 0;
+    reg [2:0] error_code = 0;
     reg [2:0] state;
     reg [2:0] return_state;
     reg [2:0] pending_operation;
@@ -59,6 +61,7 @@ module top(
     wire buy_access;
 
     wire [31:0] input_value;
+    reg [31:0] input_value_reg = 0;
 
     wire [7:0] list_digit0;
     wire [7:0] list_digit1;
@@ -84,6 +87,7 @@ module top(
     wire [3:0] keycode;
 
     reg [1:0] led_state;
+    reg error_return_flag=0;
 
     function [7:0] to_seg;
         input [3:0] num;
@@ -240,8 +244,22 @@ module top(
                 else
                     begin
                         wait_counter <= 0;
-                        state <= STATE_SALE;
+                        if (error_return_flag)
+                            state <= STATE_MENU;
+                        else
+                            state <= STATE_SALE;
+                        error_return_flag <= 0;
                     end
+        end else if (state == STATE_VERIFY_PASSWD) begin
+            if(input_value_reg == 12345678) begin
+                state <= STATE_PROFIT;
+                manager_mode <= 1;
+            end else begin
+                wait_counter <= 0;
+                error_code <= ERR_PASS;
+                error_return_flag <= 1;
+                state <= STATE_ERROR;
+            end
         end
 
         else if(key_signal) begin
@@ -257,11 +275,29 @@ module top(
                     end
 
                     else if(keycode == `KEY_2) begin
-                        state <= STATE_PROFIT;
-                        manager_mode <= 1;
+                        // state <= STATE_PROFIT;
+                        // manager_mode <= 1;
+                        
+                        return_state <= STATE_VERIFY_PASSWD;
+                        pending_operation <= `OP_NONE;
+                        input_operation <= `INPUT_CLEAN;
+                        state <= STATE_INPUT;
                     end
 
                 end
+
+                // STATE_VERIFY_PASSWD:
+                // begin
+                //     if(input_value_reg == 12345678) begin
+                //         state <= STATE_PROFIT;
+                //         manager_mode <= 1;
+                //     end else begin
+                //         wait_counter <= 0;
+                //         error_code <= ERR_PASS;
+                //         error_return_flag <= 1;
+                //         state <= STATE_ERROR;
+                //     end
+                // end
 
                 STATE_SALE:
                 begin
@@ -373,6 +409,7 @@ module top(
 
                             list_operation <= pending_operation;
                             list_detail <= input_value[6:0];
+                            input_value_reg <= input_value;
                             input_operation <= `INPUT_CLEAN;
 
                             if(pending_operation == `OP_CONFIRM) begin
@@ -546,6 +583,13 @@ module top(
                         digit2 = `DIGIT_F;
                         digit1 = `DIGIT_S;
                         digit0 = `DIGIT_A;
+                    end
+                    ERR_PASS:
+                    begin
+                        digit3 = `DIGIT_P;
+                        digit2 = `DIGIT_A;
+                        digit1 = `DIGIT_S;
+                        digit0 = `DIGIT_S;
                     end
                     default: 
                     begin
