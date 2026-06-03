@@ -3,6 +3,8 @@ Documents/*
 !/Documents/*.tex
 !/Documents/res/
 
+/Video/
+
 ## log files
 *.log
 *.jou
